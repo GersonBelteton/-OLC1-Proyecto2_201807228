@@ -1,0 +1,494 @@
+<!doctype html>
+
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Proyecto2OLC1</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+
+<body style="background-color:whitesmoke;">
+
+
+ 
+
+
+  <div>
+    <P id="demo2"></P>
+  </div>
+
+  <table style="width: 100%;">
+    <td style="width: 10%;">
+
+    </td>
+    <td style="width: 80%; height: 300px;">
+      <div class="card " style="width: 100%; height: 1000px; background-color:slategrey;">
+        <div class="card-body">
+          <h5 class="card-title">Código principal</h5>
+          <form>
+            <div class="form-group">
+
+              <textarea class="form-control text-white-50 bg-dark" id="txtEntrada" spellcheck="false" rows="active"
+                rows="35" style="background-color: grey;"></textarea>
+              <button type="button" class="btn btn-primary " id="button">Analizar</button>
+            </div>
+            <h5 class="card-title">Código copia</h5>
+            <div class="form-group">
+
+              <textarea class="form-control text-white-50 bg-dark" id="txtEntrada2" spellcheck="false" rows="active"
+                rows="35" style="background-color: grey;"></textarea>
+
+            </div>
+            <h5 class="card-title">Tokens</h5>
+            <div class="form-group">
+              <textarea id="token" class="form-control text-white-50 bg-dark" spellcheck="false" rows="active" rows="35"
+                style="background-color: grey;"></textarea>
+
+            </div>
+            <h5 class="card-title">Errores lexicos</h5>
+            <div class="form-group">
+              <textarea id="errlex" class="form-control text-white-50 bg-dark" spellcheck="false" rows="active"
+                rows="35" style="background-color: grey;"></textarea>
+
+            </div>
+
+            <h5 class="card-title">Errores Sintacticos</h5>
+            <div class="form-group">
+              <textarea id="errsin" class="form-control text-white-50 bg-dark" spellcheck="false" rows="active"
+                rows="35" style="background-color: grey;"></textarea>
+
+            </div>
+
+            <h5 class="card-title">Copia Clase</h5>
+            <div class="form-group">
+              <textarea id="cc" class="form-control text-white-50 bg-dark" spellcheck="false" rows="active" rows="35"
+                style="background-color: grey;"></textarea>
+
+            </div>
+
+            <h5 class="card-title">Copia Metodo</h5>
+            <div class="form-group">
+              <textarea id="cm" class="form-control text-white-50 bg-dark" spellcheck="false" rows="active" rows="35"
+                style="background-color: grey;"></textarea>
+
+            </div>
+
+            <h5 class="card-title">Copia Variable</h5>
+            <div class="form-group">
+              <textarea id="cv" class="form-control text-white-50 bg-dark" spellcheck="false" rows="active" rows="35"
+                style="background-color: grey;"></textarea>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </td>
+    <td style="width: 10%;">
+
+    </td>
+  </table>
+
+  <div id="arbol"></div>
+
+
+
+
+
+</body>
+
+</html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<SCRIPT Language="javascript">
+
+
+
+  $(document).ready(function () {
+
+
+
+
+    var root = 'http://localhost:3000'
+    var vec = [];
+
+
+    var txtEntrada = document.getElementById("txtEntrada")
+    var txtEntrada2 = document.getElementById("txtEntrada2")
+
+    $("#button").click(function () {
+      $.ajax({
+        url: root + '/entrada',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+          ent: txtEntrada.value,
+          ent2: txtEntrada2.value
+        }
+      }).then(function (data) {
+
+      })
+
+      $.ajax({
+
+        url: root + "/copiaclase",
+        method: 'GET',
+      }).then(function (data) {
+        var texto = data
+        console.log(texto)
+        document.getElementById("cc").innerText = texto
+
+      })
+
+      $.ajax({
+
+        url: root + "/copiametodo",
+        method: 'GET',
+      }).then(function (data) {
+        var texto = data
+        console.log(texto)
+        document.getElementById("cm").innerText = texto
+
+      })
+
+      $.ajax({
+
+        url: root + "/copiavariable",
+        method: 'GET',
+      }).then(function (data) {
+        var texto = data
+        console.log(texto)
+        document.getElementById("cv").innerText = texto
+
+      })
+      $.ajax({
+
+        url: root + "/token",
+        method: 'GET',
+      }).then(function (data) {
+        var texto = data
+        console.log(texto)
+        document.getElementById("token").innerText = texto
+
+      })
+
+      $.ajax({
+        url: root + "/errlex",
+        method: 'GET',
+      }).then(function (data) {
+        var texto = data;
+        console.log(texto)
+        document.getElementById("errlex").innerText = texto;
+      })
+
+      $.ajax({
+        url: root + "/errsin",
+        method: 'GET',
+      }).then(function (data) {
+        var texto = data;
+        console.log(texto)
+        document.getElementById("errsin").innerText = texto;
+      })
+
+      $.ajax({
+        url: root + "/ast",
+        method: 'GET',
+      }).then(function (data) {
+        console.log(data)
+        var text = ""
+
+        text += '<div class="treeview w-20 border">'
+        text += '<h6 class="pt-3 pl-3">AST</h6>'
+        text += ' <hr> <ul class="mb-1 pl-3 pb-2">'
+        text += ' <ul class="mb-1 pl-3 pb-2">'
+
+        for (var i = 0; i < data.instructions.length; i++) {
+          if (data.instructions[i].tipoInstruccion == "clase") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Clase </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+            text += '<ul class="nested">'
+            for (var j = 0; j < data.instructions[i].instrucciones.length; j++) {
+
+              if (data.instructions[i].instrucciones[j].tipoInstruccion == "declaracion") {
+                text += ' <li><i class="fas fa-angle-right rotate"></i>'
+                text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Declaracion </span>'
+                text += '<ul class="nested">'
+                text += ' <li><i class="fas fa-angle-right rotate"></i>'
+                text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Tipo </span>'
+                text += '<ul class="nested">'
+                text += '<li><i class="far fa-bell ic-w mr-1"></i>Primitivo</li>'
+                text += '</ul>'
+                text += '</li>'
+                text += ' <li><i class="fas fa-angle-right rotate"></i>'
+                text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Valor </span>'
+                text += '<ul class="nested">'
+                if (data.instructions[i].instrucciones[j].value.tipoInstruccion == "primitivo") {
+                  text += '<li><i class="far fa-bell ic-w mr-1"></i>Primitivo</li>'
+                } else if (data.instructions[i].instrucciones[j].value.tipoInstruccion == "identificador") {
+                  text += '<li><i class="far fa-bell ic-w mr-1"></i>Identificador</li>'
+                } else if (data.instructions[i].instrucciones[j].value.tipoInstruccion == "exprecion") {
+                  text += '<li><i class="far fa-bell ic-w mr-1"></i>Exprecion</li>'
+                }
+                text += '</ul>'
+                text += '</li>'
+                text += '</ul>'
+                text += '</li>'
+              } else if (data.instructions[i].instrucciones[j].tipoInstruccion == "metodo") {
+                text += ' <li><i class="fas fa-angle-right rotate"></i>'
+                text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Metodo </span>'
+                text += '<ul class="nested">'
+                text += ' <li><i class="fas fa-angle-right rotate"></i>'
+                text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Parametros </span>'
+                text += '<ul class="nested">'
+
+                text += '</ul>'
+                text += '</li>'
+
+                text += ' <li><i class="fas fa-angle-right rotate"></i>'
+                text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+                text += '<ul class="nested">'
+
+                for (var k = 0; k < data.instructions[i].instrucciones[j].instrucciones.length; k++) {
+                  Sentencias(data.instructions[i].instrucciones[j].instrucciones[k]);
+                }
+                text += '</ul>'
+                text += '</li>'
+                text += '</ul>'
+                text += '</li>'
+              }
+
+            }
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } else if (data.instructions[i].tipoInstruccion == "import") {
+            text += '<li><i class="far fa-bell ic-w mr-1"></i>Import</li>'
+          }
+
+        }
+
+
+        text += '</ul>'
+        text += '</div>'
+
+        function Sentencias(inst) {
+
+          if(inst.tipoInstruccion != null){
+            if (inst.tipoInstruccion == "declaracion") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Declaracion </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Tipo </span>'
+            text += '<ul class="nested">'
+            text += '<li><i class="far fa-bell ic-w mr-1"></i>Primitivo</li>'
+            text += '</ul>'
+            text += '</li>'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Valor </span>'
+            text += '<ul class="nested">'
+
+            if(inst.value != null){
+              if (inst.value.tipoInstruccion == "primitivo") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Primitivo</li>'
+            } else if (inst.value.tipoInstruccion == "identificador") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Identificador</li>'
+            } else if (inst.value.tipoInstruccion == "exprecion") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Exprecion</li>'
+            }
+            }
+ 
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } else if (inst.tipoInstruccion == "asignacion") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Asignacion </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Valor </span>'
+            text += '<ul class="nested">'
+
+            if(inst.value!= null){
+              if (inst.value.tipoInstruccion == "primitivo") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Primitivo</li>'
+            } else if (inst.value.tipoInstruccion == "identificador") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Identificador</li>'
+            } else if (inst.value.tipoInstruccion == "exprecion") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Exprecion</li>'
+            }
+            }
+   
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } else if (inst.tipoInstruccion == "print") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Imprimir </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Valor </span>'
+            text += '<ul class="nested">'
+
+            if(inst.print != null){
+              if (inst.print.tipoInstruccion == "primitivo") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Primitivo</li>'
+            } else if (inst.print.tipoInstruccion == "identificador") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Identificador</li>'
+            } else if (inst.print.tipoInstruccion == "exprecion") {
+              text += '<li><i class="far fa-bell ic-w mr-1"></i>Exprecion</li>'
+            }
+            }
+       
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } else if (inst.tipoInstruccion == "while") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> While </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Condicion </span>'
+            text += '<ul class="nested">'
+            text += '</ul>'
+            text += '</li>'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+            text += '<ul class="nested">'
+            for (var i = 0; i < inst.instrucciones.length; i++) {
+              Sentencias(inst.instrucciones[i])
+            }
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } else if (inst.tipoInstruccion == "do") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> DoWhile </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Condicion </span>'
+            text += '<ul class="nested">'
+            text += '</ul>'
+            text += '</li>'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+            text += '<ul class="nested">'
+            for (var i = 0; i < inst.instrucciones.length; i++) {
+              Sentencias(inst.instrucciones[i])
+            }
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } else if (inst.tipoInstruccion == "for") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> For </span>'
+            text += '<ul class="nested">'
+            Sentencias(inst.decasig)
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Condicion </span>'
+            text += '<ul class="nested">'
+            text += '</ul>'
+            text += '</li>'
+            Sentencias(inst.incdec)
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+            text += '<ul class="nested">'
+            for (var i = 0; i < inst.instrucciones.length; i++) {
+              Sentencias(inst.instrucciones[i])
+            }
+
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+
+
+          } else if (inst.tipoInstruccion == "case") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i>' + inst.tipo + '</span>'
+            text += '<ul class="nested">'
+            Sentencias(inst.exprecion)
+            for (var i = 0; i < inst.instrucciones.length; i++) {
+              Sentencias(inst.instrucciones[i])
+            }
+            text += '</ul>'
+            text += '</li>'
+          } else if (inst.tipoInstruccion == "switch") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Switch </span>'
+            text += '<ul class="nested">'
+            Sentencias(inst.exprecion)
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Case </span>'
+            text += '<ul class="nested">'
+            for (var i = 0; i < inst.caseList.length; i++) {
+              Sentencias(inst.caseList[i])
+            }
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          } if (inst.tipoInstruccion == "if") {
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> If </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Condicion </span>'
+            text += '<ul class="nested">'
+            text += '</ul>'
+            text += '</li>'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+            text += '<ul class="nested">'
+            for (var i = 0; i < inst.IfList.length; i++) {
+              Sentencias(inst.IfList[i])
+            }
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Else </span>'
+            text += '<ul class="nested">'
+            text += ' <li><i class="fas fa-angle-right rotate"></i>'
+            text += '<span><i class="far fa-envelope-open ic-w mx-1"></i> Instrucciones </span>'
+            text += '<ul class="nested">'
+            for (var i = 0; i < inst.ElseList.length; i++) {
+              Sentencias(inst.ElseList[i])
+            }
+            text += '</ul>'
+            text += '</li>'
+            text += '</ul>'
+            text += '</li>'
+          }
+          }
+  
+        }
+        document.getElementById("arbol").innerHTML = text;
+
+      })
+    })
+
+
+  });
+
+
+
+</SCRIPT>
